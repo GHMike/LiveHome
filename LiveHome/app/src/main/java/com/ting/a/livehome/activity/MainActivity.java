@@ -35,6 +35,8 @@ public class MainActivity extends FragmentActivity {
     private MyFragment myFragment;
     private Fragment[] fragments;
     private String[] fragmentsTag = new String[]{"main", "find", "my"};
+    FragmentManager manager;
+    private FragmentTransaction transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +47,14 @@ public class MainActivity extends FragmentActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         tv_title = findViewById(R.id.tv_title);
 
-        mainFragment = new MainFragment();
-        findFragment = new FindFragment();
-        myFragment = new MyFragment();
-        fragments = new Fragment[]{mainFragment, findFragment,
-                myFragment};
-        // 添加显示第一个fragment
-        getSupportFragmentManager().beginTransaction()
-                .add(mainFragment, fragmentsTag[0])
-                .add(findFragment, fragmentsTag[1])
-                .add(myFragment, fragmentsTag[2])
-                .hide(findFragment).hide(myFragment).show(mainFragment).commit();
+        mainFragment=MainFragment.newInstance();
+        findFragment=FindFragment.newInstance("","");
+        myFragment=MyFragment.newInstance();
+
+        manager = getSupportFragmentManager();
+        transaction = manager.beginTransaction();
+        transaction.add(R.id.contentPanel, MainFragment.newInstance());
+        transaction.commit();
     }
 
     //底部三个按钮的切换的监听事件
@@ -64,49 +63,26 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
+            // 点击时启动trancaction事件
+            transaction = manager.beginTransaction();
             switch (item.getItemId()) {
                 //点击到第一个按钮
                 case R.id.navigation_home:
-                    index = 0;
-                    if (currentTabIndex != index) {
-                        FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
-                        trx.hide(fragments[currentTabIndex]);
-
-                        if (!fragments[index].isAdded()) {
-                            trx.add(fragments[index], fragmentsTag[index]);
-                        }
-                        trx.show(fragments[index]).commit();
-                    }
-                    currentTabIndex = index;
+                    tv_title.setText(R.string.app_name);
+                    transaction.replace(R.id.contentPanel, mainFragment);
+                    transaction.commit();
                     return true;
                 //点击到第二个按钮
                 case R.id.navigation_dashboard:
-                    index = 1;
-                    if (currentTabIndex != index) {
-                        FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
-                        trx.hide(fragments[currentTabIndex]);
-
-                        if (!fragments[index].isAdded()) {
-                            trx.add(fragments[index], fragmentsTag[index]);
-                        }
-                        trx.show(fragments[index]).commit();
-                    }
-                    currentTabIndex = index;
+                    tv_title.setText(R.string.title_dashboard);
+                    transaction.replace(R.id.contentPanel, findFragment);
+                    transaction.commit();
                     return true;
                 //点击到第三个按钮
                 case R.id.navigation_notifications:
-                    index = 2;
-                    if (currentTabIndex != index) {
-                        FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
-                        trx.hide(fragments[currentTabIndex]);
-
-                        if (!fragments[index].isAdded()) {
-                            trx.add(fragments[index], fragmentsTag[index]);
-                        }
-                        trx.show(fragments[index]).commit();
-                    }
-                    currentTabIndex = index;
+                    tv_title.setText(R.string.title_notifications);
+                    transaction.replace(R.id.contentPanel, myFragment);
+                    transaction.commit();
                     return true;
 
             }

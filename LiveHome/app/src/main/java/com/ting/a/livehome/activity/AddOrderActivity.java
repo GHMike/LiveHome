@@ -309,7 +309,8 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                     pDialog = new ZProgressHUD(AddOrderActivity.this);
                     pDialog.setMessage("提交订单中...");
                     pDialog.setSpinnerType(ZProgressHUD.SIMPLE_ROUND_SPINNER);
-                    pDialog.show();
+                    if (!isFinishing())
+                        pDialog.show();
                 }
 
                 @Override
@@ -481,15 +482,88 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {//设置保存按钮，监听事件如下
-                //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
-                DataDao.getInstance(context).updataUserPhone(userInfo.getID(), inputServer.getText().toString());
-                //保存成功后重新查询。
-                userInfo = DataDao.getInstance(context).findgUserByID(userInfo.getID());
-                Toast.show(context, "添加成功，可以继续下订单了", Toast.LENGTH_LONG);
+                userInfo.setPhone(inputServer.getText().toString());
+                updateUserData(2);
             }
         });
         builder.show();
     }
+
+
+    //修改用户信息
+    @SuppressLint("StaticFieldLeak")
+    private void updateUserData(final int updateType) {
+        //异步网络请求加载网络数据
+        new AsyncTask<Void, Integer, Integer>() {
+
+            @Override
+            protected void onPreExecute() {
+                //初始化加载窗口
+                pDialog = new ZProgressHUD(context);
+                pDialog.setMessage("保存中...");
+                pDialog.setSpinnerType(ZProgressHUD.SIMPLE_ROUND_SPINNER);
+                if (!isFinishing())
+                    pDialog.show();
+            }
+
+            @Override
+            protected Integer doInBackground(Void... voids) {
+
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    FormBody body = null;
+                    if (updateType == 1) {//修改地址
+                        body = new FormBody.Builder()
+                                .add("userId", userInfo.getUserId())
+                                .add("userPaw", userInfo.getPassword())
+                                .add("userAdds", userInfo.getUserAdds())
+                                .build();
+                    } else {//修改电话
+                        body = new FormBody.Builder()
+                                .add("userId", userInfo.getUserId())
+                                .add("userPaw", userInfo.getPassword())
+                                .add("userPhone", userInfo.getPhone())
+                                .build();
+                    }
+                    Request request = new Request.Builder().url(DataContact.UPDATE_USER_API).post(body).build();
+                    Response response = client.newCall(request).execute();
+                    String data = "";
+                    if (response.isSuccessful()) {
+                        data = response.body().string();
+                    }
+
+                    if (data != null) {
+                        JSONObject jsonObject = new JSONObject(data);
+                        int res = jsonObject.getInt("code");
+                        return res;
+                    } else {
+                        return -1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return -1;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Integer res) {
+                if (res == 0) {
+                    pDialog.dismissWithSuccess("保存成功");
+                    Toast.show(context, "添加成功，可以继续下订单了", Toast.LENGTH_LONG);
+                    if (updateType == 1) {
+                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
+                        DataDao.getInstance(context).updataUserAdds(userInfo.getID(), userInfo.getUserAdds());
+                    } else {
+                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
+                        DataDao.getInstance(context).updataUserPhone(userInfo.getID(), userInfo.getPhone());
+                    }
+                } else {
+                    pDialog.dismissWithFailure("保存失败");
+                }
+            }
+        }.execute();
+    }
+
 
     @Override
     protected void onDestroy() {

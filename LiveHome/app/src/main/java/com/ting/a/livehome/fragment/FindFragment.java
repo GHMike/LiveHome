@@ -29,7 +29,7 @@ public class FindFragment extends Fragment implements View.OnClickListener {
     }
 
     // TODO: Rename and change types and number of parameters
-    public static Fragment newInstance(String param1, String param2) {
+    public static FindFragment newInstance(String param1, String param2) {
         FindFragment fragment = new FindFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);

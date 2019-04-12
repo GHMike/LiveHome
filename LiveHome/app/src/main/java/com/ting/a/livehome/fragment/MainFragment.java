@@ -41,7 +41,7 @@ public class MainFragment extends Fragment {
     public MainFragment() {
     }
 
-    public static Fragment newInstance() {
+    public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
         return fragment;
     }
@@ -60,56 +60,57 @@ public class MainFragment extends Fragment {
         res_But.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                lodingTask.execute();
+                loadingData();
             }
         });
 
 
-        lodingTask.execute();
+        loadingData();
     }
 
     //异步网络请求加载网络数据
     @SuppressLint("StaticFieldLeak")
-    AsyncTask<Void, Integer, Integer> lodingTask = new AsyncTask<Void, Integer, Integer>() {
+    private void loadingData() {
+        new AsyncTask<Void, Integer, Integer>() {
 
-        @Override
-        protected void onPreExecute() {
-            //初始化加载窗
-            loading_view.setVisibility(View.VISIBLE);
-        }
+            @Override
+            protected void onPreExecute() {
+                //初始化加载窗
+                loading_view.setVisibility(View.VISIBLE);
+            }
 
-        @Override
-        protected Integer doInBackground(Void... voids) {
+            @Override
+            protected Integer doInBackground(Void... voids) {
 
-            try {
-                String data = getUrlNewsData(DataContact.GET_NEWS_LIST_API);
-                if (data != null) {
-                    JSONObject jsonObject = new JSONObject(data);
-                    int res = jsonObject.getInt("code");
-                    Gson gos = new Gson();
-                    messageList = gos.fromJson(jsonObject.getString("data"), new TypeToken<List<MessageInfo>>() {
-                    }.getType());
-                    return res;
+                try {
+                    String data = getUrlNewsData(DataContact.GET_NEWS_LIST_API);
+                    if (data != null) {
+                        JSONObject jsonObject = new JSONObject(data);
+                        int res = jsonObject.getInt("code");
+                        Gson gos = new Gson();
+                        messageList = gos.fromJson(jsonObject.getString("data"), new TypeToken<List<MessageInfo>>() {
+                        }.getType());
+                        return res;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                return null;
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer res) {
-            if (res != null && res == 0) {
-                showData();
-                res_But.setVisibility(View.GONE);
-            } else {
-                res_But.setVisibility(View.VISIBLE);
+            @Override
+            protected void onPostExecute(Integer res) {
+                if (res != null && res == 0) {
+                    showData();
+                    res_But.setVisibility(View.GONE);
+                } else {
+                    res_But.setVisibility(View.VISIBLE);
+                }
+                loading_view.setVisibility(View.GONE);
             }
-            loading_view.setVisibility(View.GONE);
-        }
-    };
-
+        }.execute();
+    }
 
     //通过地址获取新闻
     private String getUrlNewsData(String url) {

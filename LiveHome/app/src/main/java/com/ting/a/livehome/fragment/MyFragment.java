@@ -20,12 +20,15 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ting.a.livehome.R;
+import com.ting.a.livehome.activity.AddOrderActivity;
 import com.ting.a.livehome.activity.CheckOrderActivity;
 import com.ting.a.livehome.adapter.OrderAdapter;
 import com.ting.a.livehome.bean.UserInfo;
 import com.ting.a.livehome.bean.UserOrderInfo;
 import com.ting.a.livehome.dao.DataDao;
 import com.ting.a.livehome.unit.DataContact;
+import com.ting.a.livehome.unit.Toast;
+import com.ting.a.livehome.unit.ZProgressHUD;
 
 import org.json.JSONObject;
 
@@ -52,10 +55,12 @@ public class MyFragment extends Fragment {
     private View loading_view;
     List<UserOrderInfo> orderList;
 
+    public ZProgressHUD pDialog;//加載窗口
+
     public MyFragment() {
     }
 
-    public static Fragment newInstance() {
+    public static MyFragment newInstance() {
         MyFragment fragment = new MyFragment();
         return fragment;
     }
@@ -101,22 +106,8 @@ public class MyFragment extends Fragment {
                 builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {//设置保存按钮，监听事件如下
-                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
-                        DataDao.getInstance(getActivity()).updataUserAdds(userInfo.getID(), inputServer.getText().toString());
-                        //保存成功后重新查询。
-                        UserInfo uu = DataDao.getInstance(getActivity()).findgUserByID(userInfo.getID());
-                        //更新全局的用户信息
-                        userInfo = uu;
-                        //重新把当前页面的地址刷新到页面上去
-                        adds_con_tv.setText(uu.getUserAdds());
-                        //如果我们发现地址是空的，我们将隐藏地址栏这一块，反之就显示
-                        if (userInfo.getUserAdds() == null || userInfo.getUserAdds().isEmpty()) {
-                            adds_View_lin.setVisibility(View.GONE);
-                            adds_View.setVisibility(View.GONE);
-                        } else {
-                            adds_View_lin.setVisibility(View.VISIBLE);
-                            adds_View.setVisibility(View.VISIBLE);
-                        }
+                        userInfo.setUserAdds(inputServer.getText().toString());
+                        updateUserData(1);
                     }
                 });
                 builder.show();
@@ -139,65 +130,152 @@ public class MyFragment extends Fragment {
                 builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {//设置保存按钮，监听事件如下
-                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
-                        DataDao.getInstance(getActivity()).updataUserPhone(userInfo.getID(), inputServer.getText().toString());
-                        //保存成功后重新查询。
-                        UserInfo uu = DataDao.getInstance(getActivity()).findgUserByID(userInfo.getID());
-                        //更新全局的用户信息
-                        userInfo = uu;
-                        //重新把当前页面的地址刷新到页面上去
-                        phone_con_tv.setText(uu.getPhone());
+                        userInfo.setPhone(inputServer.getText().toString());
+                        updateUserData(2);
                     }
                 });
                 builder.show();
             }
         });
-        lodingTask.execute();
+        loadingData();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        lodingTask.execute();
+        loadingData();
     }
 
-    //异步网络请求加载网络数据
+    //修改用户信息
     @SuppressLint("StaticFieldLeak")
-    AsyncTask<Void, Integer, Integer> lodingTask = new AsyncTask<Void, Integer, Integer>() {
+    private void updateUserData(final int updateType) {
+        //异步网络请求加载网络数据
+        new AsyncTask<Void, Integer, Integer>() {
 
-        @Override
-        protected void onPreExecute() {
-            //初始化加载progressBar
-            loading_view.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Integer doInBackground(Void... voids) {
-
-            try {
-                String data = getUrlNewsData(DataContact.GET_ORDER_API);
-                if (data != null) {
-                    JSONObject jsonObject = new JSONObject(data);
-                    int res = jsonObject.getInt("code");
-                    Gson gos = new Gson();
-                    orderList = gos.fromJson(jsonObject.getString("data"), new TypeToken<List<UserOrderInfo>>() {
-                    }.getType());
-                    return res;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            @Override
+            protected void onPreExecute() {
+                //初始化加载窗口
+                pDialog = new ZProgressHUD(getActivity());
+                pDialog.setMessage("保存中...");
+                pDialog.setSpinnerType(ZProgressHUD.SIMPLE_ROUND_SPINNER);
+                pDialog.show();
             }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(Integer res) {
-            showData();
-            loading_view.setVisibility(View.GONE);
-        }
-    };
+            @Override
+            protected Integer doInBackground(Void... voids) {
 
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    FormBody body = null;
+                    if (updateType == 1) {//修改地址
+                        body = new FormBody.Builder()
+                                .add("userId", userInfo.getUserId())
+                                .add("userPaw", userInfo.getPassword())
+                                .add("userAdds", userInfo.getUserAdds())
+                                .build();
+                    } else {//修改电话
+                        body = new FormBody.Builder()
+                                .add("userId", userInfo.getUserId())
+                                .add("userPaw", userInfo.getPassword())
+                                .add("userPhone", userInfo.getPhone())
+                                .build();
+                    }
+                    Request request = new Request.Builder().url(DataContact.UPDATE_USER_API).post(body).build();
+                    Response response = client.newCall(request).execute();
+                    String data = "";
+                    if (response.isSuccessful()) {
+                        data = response.body().string();
+                    }
+
+                    if (data != null) {
+                        JSONObject jsonObject = new JSONObject(data);
+                        int res = jsonObject.getInt("code");
+                        return res;
+                    } else {
+                        return -1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return -1;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Integer res) {
+                if (res == 0) {
+                    showData();
+                    pDialog.dismissWithSuccess("保存成功");
+
+                    if (updateType == 1) {
+                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
+                        DataDao.getInstance(getActivity()).updataUserAdds(userInfo.getID(), userInfo.getUserAdds());
+                        //重新把当前页面的地址刷新到页面上去
+                        adds_con_tv.setText(userInfo.getUserAdds());
+                        //如果我们发现地址是空的，我们将隐藏地址栏这一块，反之就显示
+                        if (userInfo.getUserAdds() == null || userInfo.getUserAdds().isEmpty()) {
+                            adds_View_lin.setVisibility(View.GONE);
+                            adds_View.setVisibility(View.GONE);
+                        } else {
+                            adds_View_lin.setVisibility(View.VISIBLE);
+                            adds_View.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        //将刚刚我们放进弹窗的文本框inputServer ，从里面获取填写的信息保存到用户表里面
+                        DataDao.getInstance(getActivity()).updataUserPhone(userInfo.getID(), userInfo.getPhone());
+                        //重新把当前页面的地址刷新到页面上去
+                        phone_con_tv.setText(userInfo.getPhone());
+                    }
+
+                } else {
+                    pDialog.dismissWithFailure("保存失败");
+                }
+            }
+        }.execute();
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
+    private void loadingData() {
+        //异步网络请求加载网络数据
+        new AsyncTask<Void, Integer, Integer>() {
+
+            @Override
+            protected void onPreExecute() {
+                //初始化加载progressBar
+                loading_view.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected Integer doInBackground(Void... voids) {
+
+                try {
+                    String data = getUrlNewsData(DataContact.GET_ORDER_API);
+                    if (data != null) {
+                        JSONObject jsonObject = new JSONObject(data);
+                        int res = jsonObject.getInt("code");
+                        Gson gos = new Gson();
+                        orderList = gos.fromJson(jsonObject.getString("data"), new TypeToken<List<UserOrderInfo>>() {
+                        }.getType());
+                        return res;
+                    } else {
+                        return -1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return -1;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Integer res) {
+                if (res == 0)
+                    showData();
+                else
+                    Toast.show(getActivity(), "加载数据失败，请检查网络", Toast.LENGTH_LONG);
+                loading_view.setVisibility(View.GONE);
+            }
+        }.execute();
+    }
 
     //通过地址获取订单信息
     private String getUrlNewsData(String url) {
@@ -233,7 +311,7 @@ public class MyFragment extends Fragment {
                 //点击进入订单查看页面，并且获取点击的条目的订单编号传进订单查看页面
                 Intent intent = new Intent(getActivity(), CheckOrderActivity.class);
                 intent.putExtra("orderCode", orderAdapter.getItem(position).getOrderNo());
-                startActivity(intent);
+                startActivityForResult(intent, 10001);
             }
         });
 
@@ -247,7 +325,6 @@ public class MyFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        lodingTask.cancel(true);
     }
 
     @Override

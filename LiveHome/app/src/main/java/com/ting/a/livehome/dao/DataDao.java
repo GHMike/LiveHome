@@ -79,6 +79,7 @@ public class DataDao {
             contentValues.put("userPass", info.getPassword());
             contentValues.put("userType", info.getUserType());
             contentValues.put("userId", info.getUserId());
+            contentValues.put("userAdds", info.getUserAdds());
             effectCounts = sqliteOperate.insert(TbleNAME, contentValues);
         }
         sqliteOperate.closeDatabase(null);
@@ -179,6 +180,7 @@ public class DataDao {
                 info.setUserAdds(cursor.getString(cursor.getColumnIndex("userAdds")));
                 info.setUserHand(cursor.getString(cursor.getColumnIndex("userHand")));
                 info.setUserLeve(cursor.getInt(cursor.getColumnIndex("userLeve")));
+                info.setPassword(cursor.getString(cursor.getColumnIndex("userPass")));
                 return info;
             }
 
