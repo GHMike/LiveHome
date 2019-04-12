@@ -2,7 +2,9 @@ package com.ting.a.livehome.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -214,11 +216,33 @@ public class CheckOrderActivity extends Activity implements View.OnClickListener
         switch (v.getId()) {
             //当点击确认订单按钮时
             case R.id.confirmBut:
-                orderConfirm(4);
+                new AlertDialog.Builder(context).setMessage("是否确认收货？")
+                        .setTitle("提示").setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        orderConfirm(4);
+                    }
+                }).setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
                 break;
             //当点击取消订单按钮时
             case R.id.cancelBut:
-                orderConfirm(-1);
+                new AlertDialog.Builder(context).setMessage("是否取消订单？")
+                        .setTitle("提示").setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        orderConfirm(-1);
+                    }
+                }).setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
                 break;
             //点击返回按钮
             case R.id.left_but:

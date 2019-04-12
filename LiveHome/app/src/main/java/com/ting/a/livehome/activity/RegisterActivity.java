@@ -40,6 +40,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private TextView tv_title;//最上方的标题
     private View left_but;//左上角的返回按钮
     private EditText user_text;//用戶名文本框
+    private EditText phone_text;//用戶手机号码
     private EditText pwass_text;//用戶密碼
     private EditText pwass_text2;//第二个用户密码
     public ZProgressHUD pDialog;//加載窗
@@ -62,6 +63,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
         user_text = this.findViewById(R.id.user_text);
         pwass_text = this.findViewById(R.id.pwass_text);
         pwass_text2 = this.findViewById(R.id.pwass_text2);
+        phone_text = this.findViewById(R.id.phone_text);
         submit_but = this.findViewById(R.id.submit_but);
         //
         tv_title = findViewById(R.id.tv_title);
@@ -97,6 +99,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
         if (user_text.getText().toString().isEmpty()) {
             Toast.show(context, "请填写用户名", Toast.LENGTH_LONG);
             return false;
+        } else if (phone_text.getText().toString().isEmpty()) {
+            Toast.show(context, "请填写手机号码", Toast.LENGTH_LONG);
+            return false;
         } else if (pwass_text.getText().toString().isEmpty()) {
             Toast.show(context, "请填写登录密码", Toast.LENGTH_LONG);
             return false;
@@ -122,19 +127,21 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 pDialog.setSpinnerType(ZProgressHUD.SIMPLE_ROUND_SPINNER);
                 pDialog.show();
             }
+
             @Override
             protected Integer doInBackground(Void... voids) {
                 try {
-                    String data=getUrlRegisterData(DataContact.REGISTER_API);
-                    JSONObject jsonObject=new JSONObject(data);
-                    Log.d("RegisterData",jsonObject.toString());
-                    int res=jsonObject.getInt("code");
-                    return  res;
+                    String data = getUrlRegisterData(DataContact.REGISTER_API);
+                    JSONObject jsonObject = new JSONObject(data);
+                    Log.d("RegisterData", jsonObject.toString());
+                    int res = jsonObject.getInt("code");
+                    return res;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return -1;
                 }
             }
+
             @Override
             protected void onPostExecute(Integer s) {
                 if (s == 0) {
@@ -153,11 +160,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
     //通过url以post的方式提交用户注册信息
     public String getUrlRegisterData(String url) throws IOException {
-        OkHttpClient client=new OkHttpClient();
+        OkHttpClient client = new OkHttpClient();
         //构建FormBody，传入要提交的参数
         FormBody formBody = new FormBody.Builder()
                 .add("userName", user_text.getText().toString())
                 .add("userPaw", pwass_text.getText().toString())
+                .add("userPhone", phone_text.getText().toString())
                 .build();
         Request request = new Request.Builder().url(url).post(formBody).build();
         Response response = client.newCall(request).execute();

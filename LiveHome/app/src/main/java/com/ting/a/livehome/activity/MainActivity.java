@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.ting.a.livehome.R;
 import com.ting.a.livehome.fragment.FindFragment;
 import com.ting.a.livehome.fragment.MainFragment;
 import com.ting.a.livehome.fragment.MyFragment;
+import com.ting.a.livehome.unit.Toast;
 
 import java.util.List;
 
@@ -47,9 +49,9 @@ public class MainActivity extends FragmentActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         tv_title = findViewById(R.id.tv_title);
 
-        mainFragment=MainFragment.newInstance();
-        findFragment=FindFragment.newInstance("","");
-        myFragment=MyFragment.newInstance();
+        mainFragment = MainFragment.newInstance();
+        findFragment = FindFragment.newInstance("", "");
+        myFragment = MyFragment.newInstance();
 
         manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
@@ -132,5 +134,26 @@ public class MainActivity extends FragmentActivity {
                     handleResult(f, requestCode, resultCode, data);
             }
         }
+    }
+
+
+    // 用来计算返回键的点击间隔时间
+    private long exitTime = 0;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                //弹出提示，可以有多种方式
+                Toast.show(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT);
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+            }
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

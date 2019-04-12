@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/content_color"
-        android:dividerHeight="1px" />
+        android:dividerHeight="0px" />
 
     <include
         android:id="@+id/loading_view"

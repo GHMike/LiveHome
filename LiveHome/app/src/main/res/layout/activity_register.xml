@@ -52,14 +52,32 @@
             android:background="#999999" />
 
         <EditText
+            android:id="@+id/phone_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:background="@color/white"
+            android:drawableLeft="@android:drawable/ic_menu_call"
+            android:drawablePadding="10dp"
+            android:hint="请填写手机号码"
+            android:inputType="phone"
+            android:maxLength="11"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#999999" />
+
+        <EditText
             android:id="@+id/pwass_text"
             android:layout_width="match_parent"
             android:layout_height="50dip"
             android:background="@color/white"
             android:drawableLeft="@mipmap/login2"
             android:drawablePadding="10dp"
-            android:inputType="textPassword"
             android:hint="请填写登录密码"
+            android:inputType="textPassword"
             android:padding="5dp"
             android:textColorHint="#999999" />
 

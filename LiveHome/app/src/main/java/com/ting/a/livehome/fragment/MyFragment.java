@@ -3,8 +3,11 @@ package com.ting.a.livehome.fragment;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
@@ -17,8 +20,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.ting.a.livehome.R;
 import com.ting.a.livehome.activity.AddOrderActivity;
 import com.ting.a.livehome.activity.CheckOrderActivity;
@@ -53,6 +58,7 @@ public class MyFragment extends Fragment {
     private View adds_View;
     private UserInfo userInfo = null;
     private View loading_view;
+    private RoundedImageView handView;
     List<UserOrderInfo> orderList;
 
     public ZProgressHUD pDialog;//加載窗口
@@ -81,6 +87,7 @@ public class MyFragment extends Fragment {
         adds_View_lin = v.findViewById(R.id.adds_View_lin);
         orderListView = v.findViewById(R.id.orderListView);
         loading_view = v.findViewById(R.id.loading_view);
+        handView = v.findViewById(R.id.hand);
 
         userName_tv.setText(userInfo.getUserName());
         if (userInfo.getUserAdds() == null || userInfo.getUserAdds().trim().isEmpty()) {
@@ -92,6 +99,9 @@ public class MyFragment extends Fragment {
         }
         adds_con_tv.setText(userInfo.getUserAdds());
         phone_con_tv.setText(userInfo.getPhone());
+
+        if (userInfo.getUserHand() != null && !userInfo.getUserHand().trim().isEmpty())
+            Glide.with(this).load(userInfo.getUserHand()).into(handView);
 
         //这里添加地址点击事件监听
         adds_tv.setOnClickListener(new View.OnClickListener() {

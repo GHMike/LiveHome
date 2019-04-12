@@ -80,9 +80,9 @@
             <TextView
                 android:id="@+id/commodity_type"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_marginLeft="10dip"
-                android:background="@android:drawable/editbox_background"
+                android:background="@android:drawable/spinner_background"
                 android:paddingLeft="10dip"
                 android:paddingRight="10dip"
                 android:text="怡宝"
@@ -157,6 +157,7 @@
             android:padding="5dp">
 
             <TextView
+                android:id="@+id/supplier_detail_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -211,9 +212,9 @@
 
             <Button
                 android:id="@+id/subtract_but"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/ic_media_previous" />
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/minus" />
 
             <EditText
                 android:id="@+id/num"
@@ -222,15 +223,16 @@
                 android:digits="1234567890"
                 android:gravity="center"
                 android:inputType="numberSigned"
+                android:enabled="false"
                 android:maxLength="2"
                 android:text="1"
                 android:textColor="@color/black" />
 
             <Button
                 android:id="@+id/plus_but"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/ic_media_next" />
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/plus" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -274,6 +276,7 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
     <include
         android:id="@+id/loading_view"
         layout="@layout/loading"

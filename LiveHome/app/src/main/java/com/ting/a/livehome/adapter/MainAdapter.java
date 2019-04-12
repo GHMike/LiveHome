@@ -54,6 +54,7 @@ public class MainAdapter extends BaseAdapter {
             mViewHolder.image = convertView.findViewById(R.id.image);
             mViewHolder.context = convertView.findViewById(R.id.context);
             mViewHolder.hot_text = convertView.findViewById(R.id.hot_text);
+            mViewHolder.date_text = convertView.findViewById(R.id.date_text);
             convertView.setTag(mViewHolder);
 
         } else {
@@ -65,9 +66,10 @@ public class MainAdapter extends BaseAdapter {
             MessageInfo item = data.get(position);
             mViewHolder.title.setText(item.getNewsName());
             mViewHolder.context.setText(item.getNewsResume());
-            mViewHolder.hot_text.setText(item.getNewsHost()+"");//数字类型不能直接赋值;
+            mViewHolder.date_text.setText("时间:" + item.getNewsCreaDate());
+            mViewHolder.hot_text.setText("热度:" + item.getNewsHost());//数字类型不能直接赋值;
             try {
-                Glide.with(mContext).load(item.getNewsPicUrl().toString()).into(mViewHolder.image);
+                Glide.with(mContext).load(item.getNewsPicUrl()).into(mViewHolder.image);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -84,6 +86,7 @@ public class MainAdapter extends BaseAdapter {
         ImageView image;
         TextView context;
         TextView hot_text;
+        TextView date_text;
 
     }
 }

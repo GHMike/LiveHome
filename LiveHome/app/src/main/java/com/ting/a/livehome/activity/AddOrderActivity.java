@@ -65,6 +65,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
     private TextView commodity_size;
     private TextView commodity_price;
     private TextView commodity_supplier;
+    private TextView supplier_detail_text;
     private Button subtract_but, plus_but;//加减按钮
     private View loading_view;
 
@@ -95,6 +96,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         commodity_size = findViewById(R.id.commodity_size);
         commodity_price = findViewById(R.id.commodity_price);
         commodity_supplier = findViewById(R.id.commodity_supplier);
+        supplier_detail_text = findViewById(R.id.supplier_detail_text);
         subtract_but = findViewById(R.id.subtract_but);
         plus_but = findViewById(R.id.plus_but);
         loading_view = findViewById(R.id.loading_view);
@@ -247,6 +249,8 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         commodity_price.setText(cInfo.getCommodityPrice());
         //更新供应商
         commodity_supplier.setText(cInfo.getCommoditySupplier());
+        //更新供应商详情
+        supplier_detail_text.setText(cInfo.getSupplierDetail());
         //更新文本框 默认订购为1
         num.setText("1");
     }

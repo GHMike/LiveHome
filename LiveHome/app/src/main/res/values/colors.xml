@@ -12,6 +12,7 @@
     <drawable name="line_background">#161823</drawable>
 
     <color name="white">#FFFFFF</color>
+    <color name="white_b">#FFFFFFFF</color>
     <color name="black">#000000</color>
 
     <!-- 控件按下时显示的颜色 -->

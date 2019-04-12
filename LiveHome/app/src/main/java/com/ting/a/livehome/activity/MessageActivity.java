@@ -21,10 +21,10 @@ import com.ting.a.livehome.R;
 public class MessageActivity extends Activity {
 
     private TextView tv_title;//最上面的title
-    private ProgressBar progressBar;//加载进度条
     private View left_but;//返回按鈕
     private WebView web_view;//显示新闻详情内容控件
     private String loadUrl = "";
+    private View loading_view;
 
 
     @Override
@@ -35,7 +35,7 @@ public class MessageActivity extends Activity {
         //寻找控件
         tv_title = findViewById(R.id.tv_title);
         left_but = findViewById(R.id.left_but);
-        progressBar = findViewById(R.id.progressbar);
+        loading_view = findViewById(R.id.loading_view);
         left_but.setVisibility(View.VISIBLE);
         web_view = findViewById(R.id.message_context);
 
@@ -60,6 +60,7 @@ public class MessageActivity extends Activity {
         web_view.loadUrl(loadUrl);
         WebSettings settings = web_view.getSettings();
         settings.setJavaScriptEnabled(true);
+        settings.setAllowContentAccess(false);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);//不使用缓存，只从网络获取数据.
         web_view.setWebViewClient(webViewClient);
 
@@ -70,19 +71,18 @@ public class MessageActivity extends Activity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {//网页开始加载
             super.onPageStarted(view, url, favicon);
-            progressBar.setVisibility(View.GONE);
+            loading_view.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {//网页加载完毕
             super.onPageFinished(view, url);
-            progressBar.setVisibility(View.VISIBLE);
-
+            loading_view.setVisibility(View.GONE);
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {//拦截指定为URL访问
-            return super.shouldOverrideUrlLoading(view, request);
+            return true;
         }
     };
 
