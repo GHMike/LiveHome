@@ -58,6 +58,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        pDialog = new ZProgressHUD(context);
         initW();
     }
 
@@ -128,8 +129,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             @Override
             //第一执行
             protected void onPreExecute() {
-                //初始化加载窗
-                pDialog = new ZProgressHUD(context);
+                //初始化加载窗;
                 pDialog.setMessage("登录中");
                 pDialog.setSpinnerType(ZProgressHUD.SIMPLE_ROUND_SPINNER);
                 if (!isFinishing())
@@ -147,7 +147,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                     //利用Gson将获得的数据转换为userInfo对象
                     UserInfo userInfo = gson.fromJson(jsonObject.getString("data"), new TypeToken<UserInfo>() {
                     }.getType());
-                    DataDao.getInstance(context).saveUser(userInfo, true);
+                    DataDao.getInstance(getApplicationContext()).saveUser(userInfo, true);
                     int res = jsonObject.getInt("code");
                     return res;
                 } catch (Exception e) {

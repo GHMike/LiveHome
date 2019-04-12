@@ -187,11 +187,11 @@ public class ZProgressHUD extends Dialog {
     }
 
     protected void dismissHUD() {
-        AsyncTask<String, Integer, Long> task = new AsyncTask<String, Integer, Long>() {
+       new AsyncTask<String, Integer, Long>() {
 
             @Override
             protected Long doInBackground(String... params) {
-                SystemClock.sleep(500);
+//                SystemClock.sleep(500);
                 return null;
             }
 
@@ -205,8 +205,7 @@ public class ZProgressHUD extends Dialog {
                     e.printStackTrace();
                 }
             }
-        };
-        task.execute();
+        }.execute();
     }
 
     @Override
