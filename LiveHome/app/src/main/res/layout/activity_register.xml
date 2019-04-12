@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg">
+
+    <include
+        android:id="@+id/title_view"
+        layout="@layout/title" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title_view"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="30dip">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="欢迎加入我们!"
+            android:textColor="@color/black"
+            android:textSize="19sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="有我!你会觉得生活更方便!"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/user_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/login1"
+            android:drawablePadding="10dp"
+            android:hint="请填写登录账号"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#999999" />
+
+        <EditText
+            android:id="@+id/pwass_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/login2"
+            android:drawablePadding="10dp"
+            android:inputType="textPassword"
+            android:hint="请填写登录密码"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#999999" />
+
+        <EditText
+            android:id="@+id/pwass_text2"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/login2"
+            android:drawablePadding="10dp"
+            android:hint="请确认登录密码"
+            android:inputType="textPassword"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+
+        <Button
+            android:id="@+id/submit_but"
+            android:layout_width="match_parent"
+            android:layout_height="45dip"
+            android:layout_marginTop="30dip"
+            android:background="@mipmap/login_but"
+            android:text="注册"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/black" />
+</RelativeLayout>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dip">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:background="@mipmap/login_logo"/>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="20dip">
+
+        <EditText
+            android:id="@+id/user_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/login1"
+            android:drawablePadding="10dp"
+            android:hint="登录账号"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#999999" />
+
+        <EditText
+            android:id="@+id/pwass_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/login2"
+            android:drawablePadding="10dp"
+            android:hint="登录密码"
+            android:inputType="textPassword"
+            android:padding="5dp"
+            android:textColorHint="#999999" />
+
+        <Button
+            android:id="@+id/submit_but"
+            android:layout_width="match_parent"
+            android:layout_height="45dip"
+            android:layout_marginTop="30dip"
+            android:background="@mipmap/login_but"
+            android:text="登录"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/re_but"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:gravity="center_horizontal"
+            android:text="注册"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
