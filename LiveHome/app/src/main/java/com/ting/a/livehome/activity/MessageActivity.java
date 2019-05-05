@@ -62,6 +62,16 @@ public class MessageActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setAllowContentAccess(false);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);//不使用缓存，只从网络获取数据.
+        // 如果是图片频道，则必须设置该接口为true，否则页面无法展现
+        settings.setDomStorageEnabled(true);
+
+        settings.setAppCacheMaxSize(1024 * 1024 * 8);
+        settings.setAppCachePath(getCacheDir().getPath());
+        settings.setAllowFileAccess(true);
+        settings.setAppCacheEnabled(true);
+        web_view.setVerticalScrollBarEnabled(false);
+        web_view.setHorizontalScrollBarEnabled(false);
+
         web_view.setWebViewClient(webViewClient);
 
     }
