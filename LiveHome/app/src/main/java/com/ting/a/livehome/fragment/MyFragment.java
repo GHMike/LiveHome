@@ -25,7 +25,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.ting.a.livehome.R;
-import com.ting.a.livehome.activity.AddOrderActivity;
 import com.ting.a.livehome.activity.CheckOrderActivity;
 import com.ting.a.livehome.adapter.OrderAdapter;
 import com.ting.a.livehome.bean.UserInfo;
@@ -33,6 +32,7 @@ import com.ting.a.livehome.bean.UserOrderInfo;
 import com.ting.a.livehome.dao.DataDao;
 import com.ting.a.livehome.unit.DataContact;
 import com.ting.a.livehome.unit.Toast;
+import com.ting.a.livehome.unit.Tools;
 import com.ting.a.livehome.unit.ZProgressHUD;
 
 import org.json.JSONObject;
@@ -126,6 +126,7 @@ public class MyFragment extends Fragment {
         phone_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 //点击之后我们创建一个EditText放在AlertDialog.Builder，弹窗里面，然后显示弹窗
                 final EditText inputServer = new EditText(getActivity());
                 inputServer.setText(userInfo.getPhone());//设置之前已经有的电话，便于修改
@@ -137,14 +138,24 @@ public class MyFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("请输入电话号码").setView(inputServer)//设置提示和把EditText添加到弹窗里面
                         .setNegativeButton("取消", null);//设置取消按钮，没有设置点击事件
+
+                //dialog点击其他地方不关闭
+                builder.setCancelable(false);
                 builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {//设置保存按钮，监听事件如下
-                        userInfo.setPhone(inputServer.getText().toString());
-                        updateUserData(2);
+                        if (Tools.isMobile(inputServer.getText().toString())) {
+                            userInfo.setPhone(inputServer.getText().toString());
+                            updateUserData(2);
+                        } else {
+
+                            Toast.show(getActivity(), "保存失败,请输入正确的手机号码", Toast.LENGTH_LONG);
+                        }
+
                     }
                 });
                 builder.show();
+
             }
         });
         loadingData();

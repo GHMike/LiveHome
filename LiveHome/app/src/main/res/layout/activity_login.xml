@@ -6,13 +6,15 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dip">
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_above="@+id/linearLayout"
         android:layout_centerHorizontal="true"
-        android:background="@mipmap/login_logo"/>
+        android:background="@mipmap/login_logo" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -30,6 +32,7 @@
             android:drawableLeft="@mipmap/login1"
             android:drawablePadding="10dp"
             android:hint="登录账号"
+            android:maxLines="1"
             android:padding="5dp"
             android:textColorHint="#999999" />
 
@@ -70,8 +73,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="18sp" />
     </LinearLayout>
-
-
 
 
 </LinearLayout>

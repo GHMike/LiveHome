@@ -18,6 +18,7 @@ import com.ting.a.livehome.bean.UserInfo;
 import com.ting.a.livehome.dao.DataDao;
 import com.ting.a.livehome.unit.DataContact;
 import com.ting.a.livehome.unit.Toast;
+import com.ting.a.livehome.unit.Tools;
 import com.ting.a.livehome.unit.ZProgressHUD;
 
 import org.json.JSONObject;
@@ -102,8 +103,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
         } else if (phone_text.getText().toString().isEmpty()) {
             Toast.show(context, "请填写手机号码", Toast.LENGTH_LONG);
             return false;
+        } else if (Tools.isMobile(phone_text.getText().toString())) {
+            Toast.show(context, "请填写正确的手机号码", Toast.LENGTH_LONG);
+            return false;
         } else if (pwass_text.getText().toString().isEmpty()) {
             Toast.show(context, "请填写登录密码", Toast.LENGTH_LONG);
+            return false;
+        } else if (pwass_text.getText().toString().trim().length() < 6) {
+            Toast.show(context, "密码必须大于6位", Toast.LENGTH_LONG);
             return false;
         } else if (!pwass_text.getText().toString().equals(pwass_text2.getText().toString())) {
             Toast.show(context, "请确认两次密码相同", Toast.LENGTH_LONG);

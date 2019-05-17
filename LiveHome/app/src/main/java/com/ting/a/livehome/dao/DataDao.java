@@ -88,6 +88,16 @@ public class DataDao {
 
 
     /**
+     * 删除本地用户
+     */
+    public void deleteUser() {
+        //初始化数据库
+        SQLiteOperate sqliteOperate = SQLiteOperate.getInstance(dbManager, false);
+        sqliteOperate.execSQL(SQL_DELETE);
+        sqliteOperate.closeDatabase(null);
+    }
+
+    /**
      * 修改订单状态
      *
      * @param orderCode

@@ -1,6 +1,9 @@
 package com.ting.a.livehome.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,9 +14,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ting.a.livehome.R;
+import com.ting.a.livehome.dao.DataDao;
 import com.ting.a.livehome.fragment.FindFragment;
 import com.ting.a.livehome.fragment.MainFragment;
 import com.ting.a.livehome.fragment.MyFragment;
@@ -27,16 +33,12 @@ import java.util.List;
  */
 public class MainActivity extends FragmentActivity {
 
-    private int index;
-    // 当前fragment的index
-    private int currentTabIndex;
     private TextView tv_title;//最上面的title
+    private Button right_but;//最上面右边的按钮
     private BottomNavigationView navigation;//底部的三个切换按钮
     private MainFragment mainFragment;
     private FindFragment findFragment;
     private MyFragment myFragment;
-    private Fragment[] fragments;
-    private String[] fragmentsTag = new String[]{"main", "find", "my"};
     FragmentManager manager;
     private FragmentTransaction transaction;
 
@@ -48,6 +50,37 @@ public class MainActivity extends FragmentActivity {
         //设置里面的按钮选择的监听事件
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         tv_title = findViewById(R.id.tv_title);
+        right_but = findViewById(R.id.right_but);
+
+        right_but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                new AlertDialog.Builder(MainActivity.this).setMessage("是否注销当前用户？")
+                        .setTitle("提示").setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences userSettings = getSharedPreferences("user", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = userSettings.edit();
+                        editor.clear();
+                        editor.commit();
+                        //调往登录页面
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
+
+
+            }
+        });
 
         mainFragment = MainFragment.newInstance();
         findFragment = FindFragment.newInstance("", "");
@@ -70,18 +103,21 @@ public class MainActivity extends FragmentActivity {
             switch (item.getItemId()) {
                 //点击到第一个按钮
                 case R.id.navigation_home:
+                    right_but.setVisibility(View.GONE);
                     tv_title.setText(R.string.app_name);
                     transaction.replace(R.id.contentPanel, mainFragment);
                     transaction.commit();
                     return true;
                 //点击到第二个按钮
                 case R.id.navigation_dashboard:
+                    right_but.setVisibility(View.GONE);
                     tv_title.setText(R.string.title_dashboard);
                     transaction.replace(R.id.contentPanel, findFragment);
                     transaction.commit();
                     return true;
                 //点击到第三个按钮
                 case R.id.navigation_notifications:
+                    right_but.setVisibility(View.VISIBLE);
                     tv_title.setText(R.string.title_notifications);
                     transaction.replace(R.id.contentPanel, myFragment);
                     transaction.commit();

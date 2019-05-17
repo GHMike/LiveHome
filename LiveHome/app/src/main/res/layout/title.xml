@@ -3,19 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="top"
-    android:background="@color/colorPrimaryDark"
-    android:gravity="center">
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="26sp" />
-
+    android:background="@color/colorPrimaryDark">
 
     <Button
         android:id="@+id/left_but"
@@ -27,13 +15,27 @@
         android:background="@drawable/back_but_bg"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="26sp" />
+
+
     <Button
         android:id="@+id/right_but"
         android:layout_width="25dip"
         android:layout_height="26dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="15dp"
         android:background="@drawable/out_user_bg"
         android:visibility="gone" />
 </RelativeLayout>

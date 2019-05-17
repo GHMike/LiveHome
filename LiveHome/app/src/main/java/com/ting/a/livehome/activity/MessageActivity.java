@@ -3,6 +3,7 @@ package com.ting.a.livehome.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -65,8 +66,6 @@ public class MessageActivity extends Activity {
         // 如果是图片频道，则必须设置该接口为true，否则页面无法展现
         settings.setDomStorageEnabled(true);
 
-        settings.setAppCacheMaxSize(1024 * 1024 * 8);
-        settings.setAppCachePath(getCacheDir().getPath());
         settings.setAllowFileAccess(true);
         settings.setAppCacheEnabled(true);
         web_view.setVerticalScrollBarEnabled(false);
@@ -92,6 +91,11 @@ public class MessageActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {//拦截指定为URL访问
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.loadUrl(request.getUrl().toString());
+            } else {
+                view.loadUrl(request.toString());
+            }
             return true;
         }
     };

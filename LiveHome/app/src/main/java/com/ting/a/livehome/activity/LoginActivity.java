@@ -58,9 +58,25 @@ public class LoginActivity extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        getUser();
         pDialog = new ZProgressHUD(context);
         initW();
     }
+
+    //获得本地是否有用户，有用户就不需要在登录了，直接进入主页
+    private void getUser() {
+        //获取保存的user标签里的属性username的值
+        SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
+        String username = pref.getString("username", "");
+        if (!username.isEmpty()) {
+            Intent intent = new Intent(context, MainActivity.class);
+            startActivity(intent);
+            finish();
+//            user_text.setText(username);
+//            pwass_text.requestFocus();
+        }
+    }
+
 
     /**
      * 初始化页面
@@ -76,13 +92,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         submit_but.setOnClickListener(this);
 
 
-        //获取保存的user标签里的属性username的值
-        SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
-        String username = pref.getString("username", "");
-        if (username != null) {
-            user_text.setText(username);
-            pwass_text.requestFocus();
-        }
     }
 
     @Override
