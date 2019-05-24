@@ -458,7 +458,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         //商户ID
         order.setMerchantId(merchant_name.getTag().toString());
         //收货人,还未收货默认为空
-        order.setOrderConsignee("");
+        order.setOrderConsignee(DataDao.getInstance(context).findgUser().getUserName());
         //收货地址
         order.setOrderConsigneeAdd(DataDao.getInstance(context).findgUser().getUserAdds());
         //收货时间，还未收货默认为空
