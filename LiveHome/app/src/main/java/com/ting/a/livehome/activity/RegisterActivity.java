@@ -103,7 +103,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
         } else if (phone_text.getText().toString().isEmpty()) {
             Toast.show(context, "请填写手机号码", Toast.LENGTH_LONG);
             return false;
-        } else if (Tools.isMobile(phone_text.getText().toString())) {
+        } else if (!Tools.isMobile(phone_text.getText().toString())) {
             Toast.show(context, "请填写正确的手机号码", Toast.LENGTH_LONG);
             return false;
         } else if (pwass_text.getText().toString().isEmpty()) {

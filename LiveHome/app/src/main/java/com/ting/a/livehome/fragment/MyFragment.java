@@ -148,7 +148,6 @@ public class MyFragment extends Fragment {
                             userInfo.setPhone(inputServer.getText().toString());
                             updateUserData(2);
                         } else {
-
                             Toast.show(getActivity(), "保存失败,请输入正确的手机号码", Toast.LENGTH_LONG);
                         }
 

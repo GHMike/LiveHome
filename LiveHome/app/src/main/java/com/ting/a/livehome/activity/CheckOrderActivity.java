@@ -62,6 +62,10 @@ public class CheckOrderActivity extends Activity implements View.OnClickListener
     private TextView orders_Cconsigne;//订单收貨人
     private TextView orders_CconsigneAdds;//订单收货地址
 
+    private TextView merchant_nameView;//配送单位名称
+    private TextView merchant_phoneView;//配送单位电话
+    private TextView merchant_addsView;//配送单位详细地址
+
     public ZProgressHUD pDialog;//加载窗
     private View but_view;//显示取消订单和确认订单按钮的View
     private String orderCode = "";//订单编号
@@ -97,6 +101,10 @@ public class CheckOrderActivity extends Activity implements View.OnClickListener
         totalPriceView = findViewById(R.id.totalPriceView);
         orders_Cconsigne = findViewById(R.id.orders_Cconsigne);
         orders_CconsigneAdds = findViewById(R.id.orders_CconsigneAdds);
+
+        merchant_nameView = findViewById(R.id.merchant_nameView);
+        merchant_phoneView = findViewById(R.id.merchant_phoneView);
+        merchant_addsView = findViewById(R.id.merchant_addsView);
         but_view = findViewById(R.id.but_view);
         loading_view = findViewById(R.id.loading_view);
 
@@ -207,6 +215,10 @@ public class CheckOrderActivity extends Activity implements View.OnClickListener
         orders_Cconsigne.setText(orderInfo.getOrderConsignee());
         orders_CconsigneAdds.setText(orderInfo.getOrderConsigneeAdd());
         totalPriceView.setText("￥ " + orderInfo.getOrderTotalPrice() + "");
+
+        merchant_nameView.setText(orderInfo.getMerchantName());
+        merchant_phoneView.setText(orderInfo.getPhoneNum());
+        merchant_addsView.setText(orderInfo.getAdds());
     }
 
 

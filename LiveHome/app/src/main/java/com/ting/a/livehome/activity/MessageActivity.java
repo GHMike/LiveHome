@@ -91,11 +91,11 @@ public class MessageActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {//拦截指定为URL访问
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.loadUrl(request.getUrl().toString());
-            } else {
-                view.loadUrl(request.toString());
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                view.loadUrl(request.getUrl().toString());
+//            } else {
+//                view.loadUrl(request.toString());
+//            }
             return true;
         }
     };

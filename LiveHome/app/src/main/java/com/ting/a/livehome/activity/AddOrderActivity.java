@@ -17,16 +17,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.Poi;
+import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ting.a.livehome.R;
 import com.ting.a.livehome.bean.CommodityInfo;
+import com.ting.a.livehome.bean.MerchantInfo;
 import com.ting.a.livehome.bean.UserInfo;
 import com.ting.a.livehome.bean.UserOrderInfo;
 import com.ting.a.livehome.dao.DataDao;
 import com.ting.a.livehome.unit.DataContact;
 import com.ting.a.livehome.unit.LiveHomeApp;
 import com.ting.a.livehome.unit.Toast;
+import com.ting.a.livehome.unit.Tools;
 import com.ting.a.livehome.unit.ZProgressHUD;
 
 import org.json.JSONObject;
@@ -62,6 +70,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
     private EditText num;//订购的数量文本狂
     private EditText backNum;//置换的空桶文本框
     private TextView commodity_type;//选择商品种类文本框
+    private TextView merchant_name;//选择配送单位文本框
     private TextView commodity_size;
     private TextView commodity_price;
     private TextView commodity_supplier;
@@ -74,12 +83,27 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
     public ZProgressHUD pDialog;//加載窗口
     private UserInfo userInfo;//用户信息
     private ArrayList<CommodityInfo> commosityInfoArrayList = null;//商品信息
+    private ArrayList<MerchantInfo> merchantInfoArrayList = new ArrayList<>();//商家信息
+    private ArrayList<MerchantInfo> selectMerchantInfoList = new ArrayList<>();//范围内的商家信息
     private String[] selectDataList;//商品选择数据
+    private String[] selectMerchantInfoDataList;//配送单位选择数据
+
+    public LocationClient mLocationClient = null;
+    private MyLocationListener myListener = new MyLocationListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_order);//加載頁面
+
+
+        mLocationClient = new LocationClient(getApplicationContext());
+        //声明LocationClient类
+        mLocationClient.registerLocationListener(myListener);
+        //注册监听函数
+        baiduSetting();
+        //mLocationClient为第二步初始化过的LocationClient对象
+        //调用LocationClient的start()方法，便可发起定位请求
 
         //寻找最上方的Title
         tv_title = findViewById(R.id.tv_title);
@@ -91,6 +115,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         cancelBut = findViewById(R.id.cancelBut);
         confirmBut = findViewById(R.id.confirmBut);
         commodity_type = findViewById(R.id.commodity_type);
+        merchant_name = findViewById(R.id.merchant_name);
         backNum = findViewById(R.id.backNum);
         num = findViewById(R.id.num);
         commodity_size = findViewById(R.id.commodity_size);
@@ -106,6 +131,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         cancelBut.setOnClickListener(this);
         left_but.setOnClickListener(this);
         commodity_type.setOnClickListener(this);
+        merchant_name.setOnClickListener(this);
         subtract_but.setOnClickListener(this);
         plus_but.setOnClickListener(this);
         getDataLoding();
@@ -157,6 +183,119 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         num.setText("1");
     }
 
+    private void baiduSetting() {
+        LocationClientOption option = new LocationClientOption();
+
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        //可选，设置定位模式，默认高精度
+        //LocationMode.Hight_Accuracy：高精度；
+        //LocationMode. Battery_Saving：低功耗；
+        //LocationMode. Device_Sensors：仅使用设备；
+
+        option.setCoorType("bd09ll");
+        //可选，设置返回经纬度坐标类型，默认GCJ02
+        //GCJ02：国测局坐标；
+        //BD09ll：百度经纬度坐标；
+        //BD09：百度墨卡托坐标；
+        //海外地区定位，无需设置坐标类型，统一返回WGS84类型坐标
+
+        option.setScanSpan(1000);
+        //可选，设置发起定位请求的间隔，int类型，单位ms
+        //如果设置为0，则代表单次定位，即仅定位一次，默认为0
+        //如果设置非0，需设置1000ms以上才有效
+
+        option.setOpenGps(true);
+        //可选，设置是否使用gps，默认false
+        //使用高精度和仅用设备两种定位模式的，参数必须设置为true
+
+        option.setLocationNotify(true);
+        //可选，设置是否当GPS有效时按照1S/1次频率输出GPS结果，默认false
+
+        option.setIgnoreKillProcess(false);
+        //可选，定位SDK内部是一个service，并放到了独立进程。
+        //设置是否在stop的时候杀死这个进程，默认（建议）不杀死，即setIgnoreKillProcess(true)
+
+        option.SetIgnoreCacheException(false);
+        //可选，设置是否收集Crash信息，默认收集，即参数为false
+
+        option.setWifiCacheTimeOut(5 * 60 * 1000);
+        //可选，V7.2版本新增能力
+        //如果设置了该接口，首次启动定位时，会先判断当前Wi-Fi是否超出有效期，若超出有效期，会先重新扫描Wi-Fi，然后定位
+
+        option.setEnableSimulateGps(false);
+        //可选，设置是否需要过滤GPS仿真结果，默认需要，即参数为false
+        option.setIsNeedLocationPoiList(true);
+        //可选，是否需要周边POI信息，默认为不需要，即参数为false
+        //如果开发者需要获得周边POI信息，此处必须为true
+
+        mLocationClient.setLocOption(option);
+        //mLocationClient为第二步初始化过的LocationClient对象
+        //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
+        //更多LocationClientOption的配置，请参照类参考中LocationClientOption类的详细说明
+    }
+
+    //百度地图监听器
+    public class MyLocationListener extends BDAbstractLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
+            //以下只列举部分获取经纬度相关（常用）的结果信息
+            //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
+
+            double latitude = location.getLatitude();    //获取纬度信息
+            double longitude = location.getLongitude();    //获取经度信息
+            float radius = location.getRadius();    //获取定位精度，默认值为0.0f
+
+            String coorType = location.getCoorType();
+            //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
+
+            int errorCode = location.getLocType();
+            //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
+
+
+            LatLng point = new LatLng(latitude, longitude);//经纬度，可以通过BDLocation得到
+            if (errorCode == 161) {
+                mLocationClient.stop();
+                selectMerchantInfoList = new ArrayList<>();
+                for (int i = 0; i < merchantInfoArrayList.size(); i++) {
+                    LatLng sd = new LatLng(merchantInfoArrayList.get(i).getGpsLat(), merchantInfoArrayList.get(i).getGpsLng());
+                    if (getDistance(point, sd) < 5000)
+                        selectMerchantInfoList.add(merchantInfoArrayList.get(i));
+                }
+
+                selectMerchantInfoDataList = new String[selectMerchantInfoList.size()];
+                for (int j = 0; j < selectMerchantInfoList.size(); j++)
+                    selectMerchantInfoDataList[j] = selectMerchantInfoList.get(j).getMerchantName();
+
+                if (selectMerchantInfoDataList.length > 1) {
+                    merchant_name.setText(selectMerchantInfoDataList[0]);
+                    merchant_name.setTag(selectMerchantInfoList.get(0).getMerchantId());
+                }
+            }
+        }
+    }
+
+    /**
+     * 计算两点之间距离
+     *
+     * @param start
+     * @param end
+     * @return 米
+     */
+    public int getDistance(LatLng start, LatLng end) {
+        double lat1 = (Math.PI / 180) * start.latitude;
+        double lat2 = (Math.PI / 180) * end.latitude;
+
+        double lon1 = (Math.PI / 180) * start.longitude;
+        double lon2 = (Math.PI / 180) * end.longitude;
+
+        //地球半径
+        double R = 6371;
+
+        //两点间距离 km，如果想要米的话，结果*1000
+        double d = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)) * R;
+        return (int) (d * 1000);
+    }
 
     //控件的点击事件监听器
     @Override
@@ -188,6 +327,9 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.commodity_type://需要弹窗选择种类
                 selectCommodityTypeDialog(selectDataList);
+                break;
+            case R.id.merchant_name://需要弹窗选择更多配送单位地址
+                selectMerchant_nameDialog(selectMerchantInfoDataList);
                 break;
             case R.id.subtract_but://减数量
                 setNum(-1);
@@ -230,6 +372,29 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
             }
         });
         commodityDialog.show();
+    }
+
+    //创建一个选择配送单位的弹窗
+    private void selectMerchant_nameDialog(final String[] data) {
+
+        AlertDialog.Builder merchant_nameDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert);
+        merchant_nameDialog.setTitle("请选择配送单位");
+        merchant_nameDialog.setItems(data, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int pos) {
+                //根据选择的商品类型去更新其他页面显示信息
+                MerchantInfo cInfo = new MerchantInfo();
+                for (int i = 0; i < merchantInfoArrayList.size(); i++) {
+                    cInfo = merchantInfoArrayList.get(i);
+                    if (cInfo.getMerchantName().equals(data[pos]))
+                        break;
+                }
+                //更新选择的商品文本框
+                merchant_name.setText(data[pos]);
+                merchant_name.setTag(cInfo.getMerchantId());
+            }
+        });
+        merchant_nameDialog.show();
     }
 
     //根据选择的商品更新页面方法
@@ -284,8 +449,14 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         order.setOrderNo("157794" + orderCodeFor.format(new Date()));
         //订单的状态，默认为等待确认 ，1是等待确认，2是订单确认，3是发货中，4是订单完成，-1是已取消
         order.setOrderState("1");
-        //订单类型也就是商品名字
-        order.setOrderType(commodity_type.getText().toString());
+        //订单类型 默认为普通订单
+        order.setOrderType("1");
+        //订单名称就是商品名称
+        order.setOrderName(commodity_type.getText().toString());
+        //商品ID
+        order.setCommodityID(commodity_type.getTag().toString());
+        //商户ID
+        order.setMerchantId(merchant_name.getTag().toString());
         //收货人,还未收货默认为空
         order.setOrderConsignee("");
         //收货地址
@@ -386,6 +557,29 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                             for (int i = 0; i < commosityInfoArrayList.size(); i++) {
                                 selectDataList[i] = commosityInfoArrayList.get(i).getCommodityName();
                             }
+                            //临时获取的配送单位
+                            List<LatLng> gpsPoint = new ArrayList<>();
+                            gpsPoint.add(new LatLng(23.13871, 113.372664));
+                            gpsPoint.add(new LatLng(23.13851, 113.373664));
+                            gpsPoint.add(new LatLng(23.23271, 113.411634));
+                            gpsPoint.add(new LatLng(23.31131, 113.172114));
+                            gpsPoint.add(new LatLng(23.41171, 113.222314));
+                            gpsPoint.add(new LatLng(23.53871, 113.1733634));
+
+                            for (int j = 0; j < gpsPoint.size(); j++) {
+                                LatLng an = gpsPoint.get(j);
+                                MerchantInfo info = new MerchantInfo();
+                                info.setMerchantId((j + 1) + "");
+                                info.setMerchantName("商家" + j + "号送水单位");
+                                info.setGpsLat(an.latitude);
+                                info.setGpsLng(an.longitude);
+                                info.setAdds("地址是：" + an.latitudeE6 + "," + an.longitudeE6);
+                                info.setPhoneNum("455636" + j);
+                                info.setMerchantIntro("");
+                                merchantInfoArrayList.add(info);
+                            }
+
+
                             return 1;
                         } else
                             return 2;
@@ -406,6 +600,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                                 commodity_type.setText(selectDataList[0]);
                                 updateUI(selectDataList[0]);
                             }
+                            mLocationClient.start();
                         }
                         loading_view.setVisibility(View.GONE);
                     } catch (Exception e) {
@@ -486,8 +681,10 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {//设置保存按钮，监听事件如下
-                userInfo.setPhone(inputServer.getText().toString());
-                updateUserData(2);
+                if (Tools.isMobile(inputServer.getText().toString())) {
+                } else {
+                    Toast.show(context, "保存失败,请输入正确的手机号码", Toast.LENGTH_LONG);
+                }
             }
         });
         builder.show();
@@ -573,5 +770,9 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         commosityInfoArrayList = null;
+        if (mLocationClient != null) {
+            mLocationClient.stop();
+            mLocationClient = null;
+        }
     }
 }

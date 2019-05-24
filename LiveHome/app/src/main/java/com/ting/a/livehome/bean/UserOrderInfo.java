@@ -4,10 +4,11 @@ package com.ting.a.livehome.bean;
  * 用户订单
  */
 
-public class UserOrderInfo {
+public class UserOrderInfo extends MerchantInfo {
     private int ID;
     private String UserId;//用户ID
     private String OrderNo;//订单编号
+    private String OrderName;//订单名称
     private String OrderSize;//订单规格
     private String OrderType;//订单类型
     private String OrderPrice;//订单单价
@@ -22,6 +23,8 @@ public class UserOrderInfo {
     private String OrderConsigneeDate;//订单签收时间
     private String OrderConsigneeAdd;//订单签收地址
     private String OrderModifyDate;//订单更新时间
+    private String CommodityID;//商品ID
+//    private String MerchantId;//商家ID
 
 
     public int getID() {
@@ -159,4 +162,54 @@ public class UserOrderInfo {
     public void setOrderModifyDate(String orderModifyDate) {
         OrderModifyDate = orderModifyDate;
     }
+
+    public String getOrderName() {
+        return OrderName;
+    }
+
+    public void setOrderName(String orderName) {
+        OrderName = orderName;
+    }
+
+    public String getCommodityID() {
+        return CommodityID;
+    }
+
+    public void setCommodityID(String commodityID) {
+        CommodityID = commodityID;
+    }
+
+    public String getMerchantName() {
+        return MerchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        MerchantName = merchantName;
+    }
+
+    public String getAdds() {
+        return Adds;
+    }
+
+    public void setAdds(String adds) {
+        Adds = adds;
+    }
+
+    public String getPhoneNum() {
+        return PhoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        PhoneNum = phoneNum;
+    }
+
+
+
+//    public String getMerchantId() {
+//        return MerchantId;
+//    }
+//
+//    public void setMerchantId(String merchantId) {
+//        MerchantId = merchantId;
+//    }
 }
