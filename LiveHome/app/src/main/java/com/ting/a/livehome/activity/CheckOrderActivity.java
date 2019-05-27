@@ -205,7 +205,7 @@ public class CheckOrderActivity extends Activity implements View.OnClickListener
 
         }
         order_size.setText(orderInfo.getOrderSize());
-        order_name.setText(orderInfo.getOrderType());
+        order_name.setText(orderInfo.getOrderName());
         order_price.setText("￥ " + orderInfo.getOrderPrice());
         order_sup.setText(orderInfo.getOrderSupplier());
         orderCodeView.setText(orderInfo.getOrderNo());

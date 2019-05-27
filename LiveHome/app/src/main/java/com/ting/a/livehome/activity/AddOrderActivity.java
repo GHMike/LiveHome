@@ -74,6 +74,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
     private TextView commodity_size;
     private TextView commodity_price;
     private TextView commodity_supplier;
+    private TextView tv_mi;
     private TextView supplier_detail_text;
     private Button subtract_but, plus_but;//加减按钮
     private View loading_view;
@@ -115,6 +116,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         cancelBut = findViewById(R.id.cancelBut);
         confirmBut = findViewById(R.id.confirmBut);
         commodity_type = findViewById(R.id.commodity_type);
+        tv_mi = findViewById(R.id.tv_mi);
         merchant_name = findViewById(R.id.merchant_name);
         backNum = findViewById(R.id.backNum);
         num = findViewById(R.id.num);
@@ -155,14 +157,14 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                         price = Float.parseFloat(commodity_price.getText().toString());
                     } catch (Exception e) {
                     }
-                    switch (type) {
-                        case "1":
-                            totalPrice = Float.parseFloat(s.toString()) * price;
-                            break;
-                        case "2":
-                            totalPrice = Float.parseFloat(s.toString()) * price * 12;
-                            break;
-                    }
+//                    switch (type) {
+//                        case "1":
+                    totalPrice = Float.parseFloat(s.toString()) * price;
+//                            break;
+//                        case "2":
+//                            totalPrice = Float.parseFloat(s.toString()) * price * 12;
+//                            break;
+//                    }
                     //把算好的总价显示在提交按钮上
                     confirmBut.setText("(￥" + (float) (Math.round(totalPrice * 100)) / 100 + ") 提交");
                 } else {//如果是空的我們就*0
@@ -245,10 +247,6 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
             double latitude = location.getLatitude();    //获取纬度信息
             double longitude = location.getLongitude();    //获取经度信息
             float radius = location.getRadius();    //获取定位精度，默认值为0.0f
-
-            String coorType = location.getCoorType();
-            //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
-
             int errorCode = location.getLocType();
             //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
 
@@ -259,7 +257,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                 selectMerchantInfoList = new ArrayList<>();
                 for (int i = 0; i < merchantInfoArrayList.size(); i++) {
                     LatLng sd = new LatLng(merchantInfoArrayList.get(i).getGpsLat(), merchantInfoArrayList.get(i).getGpsLng());
-                    if (getDistance(point, sd) < 5000)
+                    if (getDistance(point, sd) < 1500)
                         selectMerchantInfoList.add(merchantInfoArrayList.get(i));
                 }
 
@@ -267,7 +265,7 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                 for (int j = 0; j < selectMerchantInfoList.size(); j++)
                     selectMerchantInfoDataList[j] = selectMerchantInfoList.get(j).getMerchantName();
 
-                if (selectMerchantInfoDataList.length > 1) {
+                if (selectMerchantInfoDataList.length >= 1) {
                     merchant_name.setText(selectMerchantInfoDataList[0]);
                     merchant_name.setTag(selectMerchantInfoList.get(0).getMerchantId());
                 }
@@ -315,6 +313,12 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                 if (userInfo.getUserAdds() == null || userInfo.getUserAdds().trim().isEmpty()) {
                     Toast.show(AddOrderActivity.this, "请填写默认的收货地址", Toast.LENGTH_LONG);
                     setUserAdds();
+                    break;
+                }
+
+                //判断是否
+                if (merchant_name.getTag() == null || merchant_name.getTag().toString().trim().isEmpty()) {
+                    Toast.show(AddOrderActivity.this, "请选择配送单位", Toast.LENGTH_LONG);
                     break;
                 }
                 //如果都填写了我们就进行订单的保存
@@ -432,6 +436,8 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
         //判断页面上填写的值，并转换为Integer
         if (!num.getText().toString().trim().isEmpty())
             order.setOrderNum(num.getText().toString());
+
+
         //获取当前的时间
         order.setOrderCreatDate(formatter.format(new Date()));
         order.setOrderDealDate(formatter.format(new Date()));
@@ -545,11 +551,15 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                     try {
                         Integer result = null;
                         String data = getCommodityData(DataContact.GET_COMMODITY_API);
+                        String merchanData = getMerchanList(DataContact.GET_MERCHAN_API);
                         JSONObject json = new JSONObject(data);
+                        JSONObject merchanJson = new JSONObject(merchanData);
                         result = json.getInt("code");
                         if (result == 0) {
                             Gson gson = new Gson();
                             commosityInfoArrayList = gson.fromJson(json.getString("data"), new TypeToken<List<CommodityInfo>>() {
+                            }.getType());
+                            merchantInfoArrayList = gson.fromJson(merchanJson.getString("data"), new TypeToken<List<MerchantInfo>>() {
                             }.getType());
 
                             if (commosityInfoArrayList.size() > 0)
@@ -557,28 +567,6 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
                             for (int i = 0; i < commosityInfoArrayList.size(); i++) {
                                 selectDataList[i] = commosityInfoArrayList.get(i).getCommodityName();
                             }
-                            //临时获取的配送单位
-                            List<LatLng> gpsPoint = new ArrayList<>();
-                            gpsPoint.add(new LatLng(23.13871, 113.372664));
-                            gpsPoint.add(new LatLng(23.13851, 113.373664));
-                            gpsPoint.add(new LatLng(23.23271, 113.411634));
-                            gpsPoint.add(new LatLng(23.31131, 113.172114));
-                            gpsPoint.add(new LatLng(23.41171, 113.222314));
-                            gpsPoint.add(new LatLng(23.53871, 113.1733634));
-
-                            for (int j = 0; j < gpsPoint.size(); j++) {
-                                LatLng an = gpsPoint.get(j);
-                                MerchantInfo info = new MerchantInfo();
-                                info.setMerchantId((j + 1) + "");
-                                info.setMerchantName("商家" + j + "号送水单位");
-                                info.setGpsLat(an.latitude);
-                                info.setGpsLng(an.longitude);
-                                info.setAdds("地址是：" + an.latitudeE6 + "," + an.longitudeE6);
-                                info.setPhoneNum("455636" + j);
-                                info.setMerchantIntro("");
-                                merchantInfoArrayList.add(info);
-                            }
-
 
                             return 1;
                         } else
@@ -632,6 +620,19 @@ public class AddOrderActivity extends Activity implements View.OnClickListener {
 
     //获取商品数据
     private String getCommodityData(String url) throws Exception {
+
+        OkHttpClient httpClient = new OkHttpClient();
+        FormBody body = new FormBody.Builder().build();
+        Request request = new Request.Builder().url(url).post(body).build();
+        Response response = httpClient.newCall(request).execute();
+        if (response.isSuccessful())
+            return response.body().string();
+        else
+            throw new IOException("Unexpected code" + response);
+    }
+
+    //获取商家数据
+    private String getMerchanList(String url) throws Exception {
 
         OkHttpClient httpClient = new OkHttpClient();
         FormBody body = new FormBody.Builder().build();

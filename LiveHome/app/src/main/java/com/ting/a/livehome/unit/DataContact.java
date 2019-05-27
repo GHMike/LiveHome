@@ -13,6 +13,7 @@ public class DataContact {
     public static String SAVE_ORDER_API = SERVER_URL + "Home/SubmitOrderServlet";//订单提交
     public static String UPDATE_ORDER_API = SERVER_URL + "Home/UpdateOrderServlet";//修改订单
     public static String GET_COMMODITY_API = SERVER_URL + "Home/GetCommodityServlet";//获取商品
+    public static String GET_MERCHAN_API = SERVER_URL + "Home/GetMerchanServlet";//获取商家
     public static String GET_ORDER_API = SERVER_URL + "Home/GetOrderServlet";//获取订单信息
 
 
