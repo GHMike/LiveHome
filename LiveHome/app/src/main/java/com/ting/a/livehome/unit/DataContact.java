@@ -3,7 +3,7 @@ package com.ting.a.livehome.unit;
 public class DataContact {
 
     private static String SERVER_URL = "http://livehome.hookaka.com:8015/";//云服务器地址
-//    private static String SERVER_URL = "http://10.0.2.2:8080/";//本地服务器地址
+//    private static String SERVER_URL = "http://192.168.11.152:8080/";//本地服务器地址
 
 
     public static String LOGIN_API = SERVER_URL + "Home/LoginServlet";//登录

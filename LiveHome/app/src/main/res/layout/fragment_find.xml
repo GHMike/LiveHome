@@ -20,7 +20,7 @@
             android:id="@+id/find_view1"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
             <ImageView
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/title_color"
-                android:text="桶装水"/>
+                android:text="饮用水"/>
         </LinearLayout>
         <View
             android:layout_width="1dip"
@@ -41,7 +41,7 @@
             android:id="@+id/find_view2"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
             <ImageView
@@ -62,7 +62,7 @@
             android:id="@+id/find_view3"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
             <ImageView
@@ -94,7 +94,7 @@
             android:id="@+id/find_view4"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
             <ImageView
